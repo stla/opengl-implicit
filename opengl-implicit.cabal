@@ -12,7 +12,7 @@ cabal-version:       >=1.10
 
 flag exe
   description: build the executables
-  default:     True
+  default:     False
 
 library
   hs-source-dirs:      src
@@ -20,6 +20,7 @@ library
                      , MarchingCubes.CTypes
                      , MarchingCubes.OpenGL
                      , MarchingCubes
+                     , Utils.OpenGL
                      , Goursat
   build-depends:       base >= 4.7 && < 5
                      , extra
@@ -33,6 +34,19 @@ library
   include-dirs:        C
   C-sources:           C/marchingcubes.c
 
+executable goursat
+  if flag(exe)
+    buildable: True
+  else
+    buildable: False
+  hs-source-dirs:      src-exe
+  main-is:             ExeGoursat.hs
+  ghc-options:         -fllvm -main-is ExeGoursat
+  build-depends:       base >= 4.7 && < 5
+                     , opengl-implicit
+  default-language:    Haskell2010
+
 source-repository head
   type:     git
   location: https://github.com/stla/opengl-implicit
+

@@ -1,5 +1,6 @@
 module MarchingCubes
   ( module X )
   where
-import           MarchingCubes.CTypes        as X
+import           MarchingCubes.CTypes        as X (XYZ, Triangle)
 import           MarchingCubes.MarchingCubes as X
+import           MarchingCubes.OpenGL        as X
