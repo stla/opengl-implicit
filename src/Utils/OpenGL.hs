@@ -1,6 +1,9 @@
 module Utils.OpenGL
   where
-import           Graphics.Rendering.OpenGL.GL (Vertex3 (..), Normal3 (..), Color4 (..), GLfloat)
+import           Graphics.Rendering.OpenGL.GL (Color4 (..), GLfloat,
+                                               Normal3 (..), Vertex3 (..))
+
+type NTriangle = ((Vertex3 GLfloat, Vertex3 GLfloat, Vertex3 GLfloat), Normal3 GLfloat)
 
 white,black :: Color4 GLfloat
 white = Color4 1 1 1 1

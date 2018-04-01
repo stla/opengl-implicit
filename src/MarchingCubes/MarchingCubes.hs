@@ -2,10 +2,10 @@ module MarchingCubes.MarchingCubes
   (marchingCubes)
   where
 import           Control.Monad.Extra   (concatMapM)
-import           MarchingCubes.CTypes
 import           Foreign.Marshal.Alloc (free, malloc, mallocBytes)
 import           Foreign.Marshal.Array (peekArray)
 import           Foreign.Storable      (poke, sizeOf)
+import           MarchingCubes.CTypes
 
 polygonise :: Double    -- isolevel
            -> GridCell  -- grid cell
@@ -19,6 +19,7 @@ polygonise iso gridcell = do
     ctriangles <- peekArray (fromIntegral ntri) ctrianglesPtr
     let triangles = map cTriangleToTriangle ctriangles
     free ctrianglesPtr
+    free cgridcellPtr
     return triangles
 
 toGridCell :: [XYZ] -> [Double] -> GridCell
@@ -44,17 +45,6 @@ voxelGrid :: Int -> Double -> Double -> [[XYZ]]
 voxelGrid n a b = map (scaleCube n a b) (baseGrid n)
 
 -- ~~ EXAMPLES ~~ --
-
--- GOURSAT
-fGoursat :: XYZ -> Double
-fGoursat (x,y,z) = x**4 + y**4 + z**4 - 0.27*(x**2+y**2+z**2)**2 - 0.5*(x**2+y**2+z**2)
-
-gridcells_Goursat :: [GridCell]
-gridcells_Goursat = map (\vcube -> toGridCell vcube (map fGoursat vcube))
-                        (voxelGrid 20 (-2) 2)
-
-triangles_Goursat :: IO [Triangle]
-triangles_Goursat = concatMapM (polygonise 2) gridcells_Goursat
 
 -- HEART
 fHeart :: XYZ -> Double

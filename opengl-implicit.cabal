@@ -22,6 +22,7 @@ library
                      , MarchingCubes
                      , Utils.OpenGL
                      , Goursat
+                     , Orthocircle
   build-depends:       base >= 4.7 && < 5
                      , extra
                      , OpenGL
@@ -42,6 +43,18 @@ executable goursat
   hs-source-dirs:      src-exe
   main-is:             ExeGoursat.hs
   ghc-options:         -fllvm -main-is ExeGoursat
+  build-depends:       base >= 4.7 && < 5
+                     , opengl-implicit
+  default-language:    Haskell2010
+
+executable orthocircle
+  if flag(exe)
+    buildable: True
+  else
+    buildable: False
+  hs-source-dirs:      src-exe
+  main-is:             ExeOrthocircle.hs
+  ghc-options:         -fllvm -threaded -main-is ExeOrthocircle
   build-depends:       base >= 4.7 && < 5
                      , opengl-implicit
   default-language:    Haskell2010

@@ -2,9 +2,9 @@ module MarchingCubes.OpenGL
   where
 import           Graphics.Rendering.OpenGL.GL (Normal3 (..), Vertex3 (..))
 import           MarchingCubes.CTypes         (Triangle)
-import           Utils.OpenGL                 (triangleNormal)
+import           Utils.OpenGL                 (NTriangle, triangleNormal)
 
-fromTriangle :: Floating a => Triangle -> ((Vertex3 a, Vertex3 a, Vertex3 a), Normal3 a)
+fromTriangle :: Triangle -> NTriangle
 fromTriangle ((x1,y1,z1),(x2,y2,z2),(x3,y3,z3)) = (triangle, n)
   where
   x1' = realToFrac x1
