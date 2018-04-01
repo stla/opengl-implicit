@@ -1,4 +1,4 @@
-module ExeGoursat.hs
+module ExeGoursat
   where
 import qualified Goursat as G
 
