@@ -10,25 +10,32 @@ import           Utils.OpenGL
 red :: Color4 GLfloat
 red = Color4 1 0 0 1
 
-fGoursat :: XYZ -> Double
-fGoursat (x,y,z) = x**4 + y**4 + z**4 - 0.27*(x**2+y**2+z**2)**2 - 0.5*(x**2+y**2+z**2)
+fGoursat :: Double -> Double -> XYZ -> Double
+fGoursat a b (x,y,z) =
+  x**4 + y**4 + z**4 + a*(x**2+y**2+z**2)**2 + b*(x**2+y**2+z**2)
 
-trianglesGoursat :: IO [((Vertex3 GLfloat, Vertex3 GLfloat, Vertex3 GLfloat), Normal3 GLfloat)]
-trianglesGoursat = do
-  triangles <- marchingCubes fGoursat 2.0 (-2.0) 2.0 20
+trianglesGoursat :: Double -> Double -> Double
+                 -> IO [((Vertex3 GLfloat, Vertex3 GLfloat, Vertex3 GLfloat), Normal3 GLfloat)]
+trianglesGoursat a b l = do
+  triangles <- marchingCubes (fGoursat a b) l (-2.5) 2.5 50
   return $ map fromTriangle triangles
 
 display :: IORef GLfloat -> IORef GLfloat -> IORef GLfloat -- rotations
-        -> IORef GLdouble  -- zoom
+        -> IORef Double -> IORef Double -- parameters a and b
+        -> IORef Double  -- isolevel
+        -> IORef Double  -- zoom
         -> DisplayCallback
-display rot1 rot2 rot3 zoom = do
+display rot1 rot2 rot3 a b l zoom = do
   clear [ColorBuffer, DepthBuffer]
   r1 <- get rot1
   r2 <- get rot2
   r3 <- get rot3
   z <- get zoom
   (_, size) <- get viewport
-  triangles <- trianglesGoursat
+  a' <- get a
+  b' <- get b
+  l' <- get l
+  triangles <- trianglesGoursat a' b' l'
   loadIdentity
   resize z size
   rotate r1 $ Vector3 1 0 0
@@ -57,18 +64,26 @@ resize zoom s@(Size w h) = do
     h' = realToFrac h
 
 keyboard :: IORef GLfloat -> IORef GLfloat -> IORef GLfloat -- rotations
-         -> IORef GLdouble -- zoom
+         -> IORef Double -> IORef Double -- parameters a and b
+         -> IORef Double -- isolevel
+         -> IORef Double -- zoom
          -> KeyboardCallback
-keyboard rot1 rot2 rot3 zoom c _ =
+keyboard rot1 rot2 rot3 a b l zoom c _ =
   case c of
     'e' -> rot1 $~! subtract 1
-    'r' -> rot1 $~! (+1)
+    'r' -> rot1 $~! (+ 1)
     't' -> rot2 $~! subtract 1
-    'y' -> rot2 $~! (+1)
+    'y' -> rot2 $~! (+ 1)
     'u' -> rot3 $~! subtract 1
-    'i' -> rot3 $~! (+1)
-    'm' -> zoom $~! (+1)
+    'i' -> rot3 $~! (+ 1)
+    'm' -> zoom $~! (+ 1)
     'l' -> zoom $~! subtract 1
+    'f' -> a $~! (+ 0.02)
+    'v' -> a $~! subtract 0.02
+    'g' -> b $~! (+ 0.02)
+    'b' -> b $~! subtract 0.02
+    'h' -> l $~! (+ 0.1)
+    'n' -> l $~! subtract 0.1
     'q' -> leaveMainLoop
     _   -> return ()
 
@@ -96,15 +111,19 @@ main = do
   rot2 <- newIORef 0.0
   rot3 <- newIORef 0.0
   zoom <- newIORef 0.0
-  displayCallback $= display rot1 rot2 rot3 zoom
+  a <- newIORef (-0.27)
+  b <- newIORef (-0.5)
+  l <- newIORef 2.0
+  displayCallback $= display rot1 rot2 rot3 a b l zoom
   reshapeCallback $= Just (resize 0)
-  keyboardCallback $= Just (keyboard rot1 rot2 rot3 zoom)
+  keyboardCallback $= Just (keyboard rot1 rot2 rot3 a b l zoom)
   idleCallback $= Just idle
   putStrLn "*** Goursat surface ***\n\
         \    To quit, press q.\n\
         \    Scene rotation:\n\
         \        e, r, t, y, u, i\n\
         \    Zoom: l, m\n\
-        \    Increase/decrease parameter: n, b \n\
+        \    Increase/decrease parameters:\n\
+        \        f, v, g, b, h, n\n\
         \"
   mainLoop
