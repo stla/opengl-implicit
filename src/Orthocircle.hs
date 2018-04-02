@@ -21,7 +21,7 @@ fOrthocircle a b (x,y,z) =
 
 trianglesOrthocircle :: Double -> Double -> Double -> IO [NTriangle]
 trianglesOrthocircle a b l = do
-  triangles <- marchingCubes (fOrthocircle a b) l (-1.6,1.6) 40
+  triangles <- marchingCubes (fOrthocircle a b) l (-1.6,1.6) 100
   return $ map fromTriangle triangles
 
 display :: IORef GLfloat -> IORef GLfloat -> IORef GLfloat -- rotations
@@ -73,7 +73,7 @@ keyboard :: IORef GLfloat -> IORef GLfloat -> IORef GLfloat -- rotations
          -> IORef Double -- isolevel
          -> IORef Double -- zoom
          -> KeyboardCallback
-keyboard rot1 rot2 rot3 a b l zoom c _ =
+keyboard rot1 rot2 rot3 a b l zoom c _ = do
   case c of
     'e' -> rot1 $~! subtract 2
     'r' -> rot1 $~! (+ 2)
@@ -91,6 +91,7 @@ keyboard rot1 rot2 rot3 a b l zoom c _ =
     'n' -> l $~! subtract 0.1
     'q' -> leaveMainLoop
     _   -> return ()
+  postRedisplay Nothing
 
 idle :: IdleCallback
 idle = postRedisplay Nothing
@@ -123,7 +124,7 @@ main = do
   displayCallback $= display rot1 rot2 rot3 a b l zoom
   reshapeCallback $= Just (resize 0)
   keyboardCallback $= Just (keyboard rot1 rot2 rot3 a b l zoom)
-  idleCallback $= Just idle
+  idleCallback $= Nothing -- Just idle
   putStrLn "*** Orthocircle ***\n\
         \    To quit, press q.\n\
         \    Scene rotation:\n\

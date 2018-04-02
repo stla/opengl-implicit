@@ -14,7 +14,7 @@ polygonise iso gridcell = do
     let cgridcell = gridCellToCGridCell gridcell
     cgridcellPtr <- mallocBytes (sizeOf (undefined :: CGridCell))
     poke cgridcellPtr cgridcell
-    ctrianglesPtr <- malloc
+    ctrianglesPtr <- mallocBytes (sizeOf (undefined :: CTriangle))
     ntri <- c_Polygonise cgridcellPtr (realToFrac iso) ctrianglesPtr
     ctriangles <- peekArray (fromIntegral ntri) ctrianglesPtr
     let triangles = map cTriangleToTriangle ctriangles

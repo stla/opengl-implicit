@@ -12,11 +12,19 @@ red = Color4 1 0 0 1
 
 fGoursat :: Double -> Double -> XYZ -> Double
 fGoursat a b (x,y,z) =
-  x**4 + y**4 + z**4 + a*(x**2+y**2+z**2)**2 + b*(x**2+y**2+z**2)
+  x4 + y4 + z4 + a*x2y2z2*x2y2z2 + b*x2y2z2
+  where
+  x2 = x*x
+  y2 = y*y
+  z2 = z*z
+  x2y2z2 = x2+y2+z2
+  x4 = x2*x2
+  y4 = y2*y2
+  z4 = z2*z2
 
 trianglesGoursat :: Double -> Double -> Double -> IO [NTriangle]
 trianglesGoursat a b l = do
-  triangles <- marchingCubes (fGoursat a b) l (-2.5,2.5) 50
+  triangles <- marchingCubes (fGoursat a b) l (-2.5,2.5) 100
   return $ map fromTriangle triangles
 
 display :: IORef GLfloat -> IORef GLfloat -> IORef GLfloat -- rotations
@@ -25,6 +33,7 @@ display :: IORef GLfloat -> IORef GLfloat -> IORef GLfloat -- rotations
         -> IORef Double  -- zoom
         -> DisplayCallback
 display rot1 rot2 rot3 a b l zoom = do
+  putStrLn "hello"
   clear [ColorBuffer, DepthBuffer]
   r1 <- get rot1
   r2 <- get rot2
@@ -67,7 +76,7 @@ keyboard :: IORef GLfloat -> IORef GLfloat -> IORef GLfloat -- rotations
          -> IORef Double -- isolevel
          -> IORef Double -- zoom
          -> KeyboardCallback
-keyboard rot1 rot2 rot3 a b l zoom c _ =
+keyboard rot1 rot2 rot3 a b l zoom c _ = do
   case c of
     'e' -> rot1 $~! subtract 2
     'r' -> rot1 $~! (+ 2)
@@ -85,6 +94,7 @@ keyboard rot1 rot2 rot3 a b l zoom c _ =
     'n' -> l $~! subtract 0.1
     'q' -> leaveMainLoop
     _   -> return ()
+  postRedisplay Nothing
 
 idle :: IdleCallback
 idle = postRedisplay Nothing
@@ -116,7 +126,7 @@ main = do
   displayCallback $= display rot1 rot2 rot3 a b l zoom
   reshapeCallback $= Just (resize 0)
   keyboardCallback $= Just (keyboard rot1 rot2 rot3 a b l zoom)
-  idleCallback $= Just idle
+  idleCallback $= Nothing -- Just idle
   putStrLn "*** Goursat surface ***\n\
         \    To quit, press q.\n\
         \    Scene rotation:\n\

@@ -3,6 +3,7 @@
 module MarchingCubes.CTypes
   (  XYZ
    , Triangle
+   , CTriangle
    , GridCell (..)
    , CGridCell
    , c_Polygonise
