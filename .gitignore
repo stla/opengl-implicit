@@ -20,3 +20,8 @@ cabal.project.local
 .HTF/
 hsc2hs/CTypes.hs
 gallery/
+ztemp.hs
+src/MarchingCubes2.hs
+src/MarchingCubes/MarchingCubes2.hs
+src/Orthocircle2.hs
+src/Goursat2.hs

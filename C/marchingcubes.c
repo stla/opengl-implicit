@@ -2,6 +2,8 @@
 #include <math.h>
 #include "marchingcubes.h"
 
+/* Author: Paul Bourke */
+
 /*
    Linearly interpolate the position where an isosurface cuts
    an edge between two vertices, each with their own scalar value

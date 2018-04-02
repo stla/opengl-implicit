@@ -34,15 +34,15 @@ cube (i,j,k) = [(dbl a, dbl b, dbl c) | a <- [i,i+1], b <- [j,j+1], c <- [k,k+1]
 baseGrid :: Int -> [[XYZ]]
 baseGrid n = map cube [(i, j, k) | i <- [0 .. n], j <- [0 .. n], k <- [0 .. n]]
 
-scaleCube :: Int -> Double -> Double -> [XYZ] -> [XYZ]
-scaleCube n a b = map scale
+scaleCube :: Int -> (Double,Double) -> [XYZ] -> [XYZ]
+scaleCube n (a,b) = map scale
     where
     scale (x, y, z) = (s x, s y, s z)
       where
       s u = a + (b-a)*u / realToFrac (n+1)
 
-voxelGrid :: Int -> Double -> Double -> [[XYZ]]
-voxelGrid n a b = map (scaleCube n a b) (baseGrid n)
+voxelGrid :: Int -> (Double,Double) -> [[XYZ]]
+voxelGrid n ab = map (scaleCube n ab) (baseGrid n)
 
 -- ~~ EXAMPLES ~~ --
 
@@ -52,7 +52,7 @@ fHeart (x,y,z) = (2*x**2+y**2+z**2-1)**3 - x**2*z**3/10 - y**2*z**3
 
 gridcells_Heart :: [GridCell]
 gridcells_Heart = map (\vcube -> toGridCell vcube (map fHeart vcube))
-                      (voxelGrid 50 (-4) 4)
+                      (voxelGrid 50 (-4,4))
 
 triangles_Heart :: IO [Triangle]
 triangles_Heart = concatMapM (polygonise 0) gridcells_Heart
@@ -60,9 +60,9 @@ triangles_Heart = concatMapM (polygonise 0) gridcells_Heart
 -- ~~ MAIN FUNCTION ~~ --
 marchingCubes :: (XYZ -> Double)   -- function
               -> Double            -- isolevel
-              -> Double -> Double  -- bounds (common to x,y,z)
+              -> (Double, Double)  -- bounds (common to x,y,z)
               -> Int               -- grid subdivisions
               -> IO [Triangle]
-marchingCubes f level a b n = concatMapM (polygonise level) gridcells
+marchingCubes f level ab n = concatMapM (polygonise level) gridcells
   where
-  gridcells = map (\vcube -> toGridCell vcube (map f vcube)) (voxelGrid n a b)
+  gridcells = map (\vcube -> toGridCell vcube (map f vcube)) (voxelGrid n ab)

@@ -16,7 +16,7 @@ fGoursat a b (x,y,z) =
 
 trianglesGoursat :: Double -> Double -> Double -> IO [NTriangle]
 trianglesGoursat a b l = do
-  triangles <- marchingCubes (fGoursat a b) l (-2.5) 2.5 50
+  triangles <- marchingCubes (fGoursat a b) l (-2.5,2.5) 50
   return $ map fromTriangle triangles
 
 display :: IORef GLfloat -> IORef GLfloat -> IORef GLfloat -- rotations
