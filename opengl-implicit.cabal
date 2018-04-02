@@ -23,6 +23,7 @@ library
                      , Utils.OpenGL
                      , Goursat
                      , Orthocircle
+                     , Heart
 --                     , MarchingCubes.MarchingCubes2
 --                     , MarchingCubes2
 --                     , Orthocircle2

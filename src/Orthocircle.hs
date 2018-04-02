@@ -87,8 +87,8 @@ keyboard rot1 rot2 rot3 a b l zoom c _ = do
     'v' -> a $~! subtract 0.025
     'g' -> b $~! (+ 0.1)
     'b' -> b $~! subtract 0.1
-    'h' -> l $~! (+ 0.1)
-    'n' -> l $~! subtract 0.1
+    'h' -> l $~! (+ 0.02)
+    'n' -> l $~! subtract 0.02
     'q' -> leaveMainLoop
     _   -> return ()
   postRedisplay Nothing
@@ -100,13 +100,13 @@ main :: IO ()
 main = do
   _ <- getArgsAndInitialize
   _ <- createWindow "Orthocircle"
-  windowSize $= Size 300 300
+  windowSize $= Size 400 400
   initialDisplayMode $= [RGBAMode, DoubleBuffered, WithDepthBuffer]
   cullFace $= Just Back
   clearColor $= black
   materialAmbient Front $= black
   lighting $= Enabled
-  lightModelTwoSide $= Enabled
+  -- lightModelTwoSide $= Enabled
   light (Light 0) $= Enabled
   position (Light 0) $= Vertex4 0 0 (-100) 1
   ambient (Light 0) $= black

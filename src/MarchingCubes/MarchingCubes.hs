@@ -14,7 +14,7 @@ polygonise iso gridcell = do
     let cgridcell = gridCellToCGridCell gridcell
     cgridcellPtr <- mallocBytes (sizeOf (undefined :: CGridCell))
     poke cgridcellPtr cgridcell
-    ctrianglesPtr <- mallocBytes (sizeOf (undefined :: CTriangle))
+    ctrianglesPtr <- mallocBytes (5 * sizeOf (undefined :: CTriangle))
     ntri <- c_Polygonise cgridcellPtr (realToFrac iso) ctrianglesPtr
     ctriangles <- peekArray (fromIntegral ntri) ctrianglesPtr
     let triangles = map cTriangleToTriangle ctriangles
@@ -43,19 +43,6 @@ scaleCube n (a,b) = map scale
 
 voxelGrid :: Int -> (Double,Double) -> [[XYZ]]
 voxelGrid n ab = map (scaleCube n ab) (baseGrid n)
-
--- ~~ EXAMPLES ~~ --
-
--- HEART
-fHeart :: XYZ -> Double
-fHeart (x,y,z) = (2*x**2+y**2+z**2-1)**3 - x**2*z**3/10 - y**2*z**3
-
-gridcells_Heart :: [GridCell]
-gridcells_Heart = map (\vcube -> toGridCell vcube (map fHeart vcube))
-                      (voxelGrid 50 (-4,4))
-
-triangles_Heart :: IO [Triangle]
-triangles_Heart = concatMapM (polygonise 0) gridcells_Heart
 
 -- ~~ MAIN FUNCTION ~~ --
 marchingCubes :: (XYZ -> Double)   -- function
