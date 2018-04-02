@@ -2,7 +2,7 @@ module MarchingCubes.MarchingCubes
   (marchingCubes)
   where
 import           Control.Monad.Extra   (concatMapM)
-import           Foreign.Marshal.Alloc (free, malloc, mallocBytes)
+import           Foreign.Marshal.Alloc (free, mallocBytes)
 import           Foreign.Marshal.Array (peekArray)
 import           Foreign.Storable      (poke, sizeOf)
 import           MarchingCubes.CTypes
